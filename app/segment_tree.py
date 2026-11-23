@@ -153,6 +153,30 @@ class VisibleSoftmaxTree:
     def visible_count(self):
         return self.cnt[1]
 
+    def visible_indices(self):
+        """Ascending shot numbers of all currently playable shots.
+
+        O(number of tree nodes visited); walks the tree checking the lazy
+        cover counters instead of pushing them down.
+        """
+        out = []
+        n = self.n
+        cover = self.cover
+        size = self.size
+
+        def walk(node, lo, hi):
+            if lo >= n or cover[node] > 0:
+                return
+            if node >= size:  # leaf
+                out.append(lo)
+                return
+            mid = (lo + hi) >> 1
+            walk(node * 2, lo, mid)
+            walk(node * 2 + 1, mid, hi)
+
+        walk(1, 0, size)
+        return out
+
     def retrieval_vector(self):
         """Softmax-weighted feature sum over visible shots, or None if all hidden."""
         if self.cnt[1] == 0:
